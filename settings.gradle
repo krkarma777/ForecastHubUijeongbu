@@ -1,1 +1,3 @@
 rootProject.name = 'ForecastHubUijeongbu'
+
+include 'domain'
