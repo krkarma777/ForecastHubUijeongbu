@@ -35,7 +35,8 @@ public class WeatherController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getForecasts(@RequestParam("nx") Integer nx, @RequestParam("ny") Integer ny) {
+    public ResponseEntity<?> getForecasts(@RequestParam(value = "nx", required = false) Integer nx,
+                                          @RequestParam(value = "ny", required = false) Integer ny) {
         if (nx == null || ny == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "좌표를 정확히 입력해주십시오."));
         }
