@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/api/forecasts")
 public class WeatherController {
 
     private final WeatherService weatherService;
@@ -23,22 +24,22 @@ public class WeatherController {
         this.weatherService = weatherService;
     }
 
-    @PostMapping("/forecasts")
-    public ResponseEntity<?> fetchAndSaveForecast(@RequestBody  @Validated WeatherForecastRequestDTO requestDTO,
+    @PostMapping
+    public ResponseEntity<?> fetchAndSaveForecast(@RequestBody @Validated WeatherForecastRequestDTO requestDTO,
                                                   BindingResult bindingResult) {
-
         if (bindingResult.hasErrors()) {
-            Map<String, String> errors = getErrors(bindingResult);
-            String s = errors.values().stream().toList().get(0);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("message", s, "errors", errors));
+            return ResponseEntity.badRequest().body(collectErrors(bindingResult));
         }
         weatherService.fetchWeatherData(requestDTO).forEach(weatherService::saveForecastData);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/forecasts")
-    public ResponseEntity<List<WeatherForecast>> getForecasts(@RequestParam int nx, @RequestParam int ny) {
+    @GetMapping
+    public ResponseEntity<?> getForecasts(@RequestParam("nx") Integer nx, @RequestParam("ny") Integer ny) {
+        if (nx == null || ny == null) {
+            return ResponseEntity.badRequest().body(Map.of("message", "좌표를 정확히 입력해주십시오."));
+        }
+
         List<WeatherForecast> forecasts = weatherService.getForecasts(nx, ny);
         if (forecasts.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -46,8 +47,8 @@ public class WeatherController {
         return ResponseEntity.ok(forecasts);
     }
 
-    private Map<String, String> getErrors(BindingResult bindingResult) {
+    private Map<String, String> collectErrors(BindingResult bindingResult) {
         return bindingResult.getFieldErrors().stream()
-                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (existing, replacement) -> existing));
     }
 }
