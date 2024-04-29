@@ -1,0 +1,3 @@
+rootProject.name = 'sync-application'
+
+include(":domain")
