@@ -1,6 +1,8 @@
 package modules.domain.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,13 +11,15 @@ import lombok.Setter;
 public class WeatherForecastRequestDTO {
 
     @NotNull(message = "페이지 번호를 입력해주세요.")
-    private int pageNo;                 // 페이지 번호
+    @Min(value = 1, message = "페이지 번호 값은 최소 1입니다.")
+    private Integer pageNo;                 // 페이지 번호
     @NotNull(message = "한 페이지 결과 수를 입력해주세요.")
-    private int numOfRows;              // 한 페이지 결과 수
+    @Min(value = 1, message = "한 페이지 결과 수는 최소 1입니다.")
+    private Integer numOfRows;              // 한 페이지 결과 수
     @NotNull(message = "예보지점 X 좌표를 입력해주세요.")
-    private int nx;                     // 예보지점 X 좌표
+    private Integer nx;                     // 예보지점 X 좌표
     @NotNull(message = "예보지점 Y 좌표를 입력해주세요.")
-    private int ny;                     // 예보지점 Y 좌표
+    private Integer ny;                     // 예보지점 Y 좌표
 
     @Override
     public String toString() {
@@ -27,35 +31,35 @@ public class WeatherForecastRequestDTO {
                 '}';
     }
 
-    public int getPageNo() {
+    public Integer getPageNo() {
         return pageNo;
     }
 
-    public void setPageNo(int pageNo) {
+    public void setPageNo(Integer pageNo) {
         this.pageNo = pageNo;
     }
 
-    public int getNumOfRows() {
+    public Integer getNumOfRows() {
         return numOfRows;
     }
 
-    public void setNumOfRows(int numOfRows) {
+    public void setNumOfRows(Integer numOfRows) {
         this.numOfRows = numOfRows;
     }
 
-    public int getNx() {
+    public Integer getNx() {
         return nx;
     }
 
-    public void setNx(int nx) {
+    public void setNx(Integer nx) {
         this.nx = nx;
     }
 
-    public int getNy() {
+    public Integer getNy() {
         return ny;
     }
 
-    public void setNy(int ny) {
+    public void setNy(Integer ny) {
         this.ny = ny;
     }
 }
