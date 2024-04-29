@@ -79,13 +79,14 @@ public class WeatherService {
         }
     }
 
-    // 데이터베이스에 이미 데이터가 있는지 확인합니다.
+    // 새로운 날씨 정보일 경우, 저장합니다.
     private void saveForecastIfNotExists(JsonNode item) {
         if (!existsInDatabase(item)) {
             weatherForecastRepository.save(parseForecast(item));
         }
     }
 
+    // 데이터베이스에 이미 데이터가 있는지 확인합니다.
     private boolean existsInDatabase(JsonNode item) {
         return weatherForecastRepository.existsByBaseDateAndBaseTimeAndNxAndNyAndCategory(
                 item.path("baseDate").asText(), item.path("baseTime").asText(),
