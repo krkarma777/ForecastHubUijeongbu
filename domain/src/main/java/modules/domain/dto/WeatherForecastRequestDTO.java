@@ -21,6 +21,16 @@ public class WeatherForecastRequestDTO {
     @NotNull(message = "예보지점 Y 좌표를 입력해주세요.")
     private Integer ny;                     // 예보지점 Y 좌표
 
+    public WeatherForecastRequestDTO(Integer pageNo, Integer numOfRows, Integer nx, Integer ny) {
+        this.pageNo = pageNo;
+        this.numOfRows = numOfRows;
+        this.nx = nx;
+        this.ny = ny;
+    }
+
+    public WeatherForecastRequestDTO() {
+    }
+
     @Override
     public String toString() {
         return "WeatherForecastRequestDTO{" +

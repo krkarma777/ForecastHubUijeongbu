@@ -42,8 +42,7 @@ public class WeatherControllerTest {
 
     @BeforeEach
     public void setup() {
-        weatherService = mock(WeatherService.class);
-        weatherController = new WeatherController(weatherService);
+        weatherController = new WeatherController(mock(WeatherService.class));
 
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(weatherController).build();
@@ -52,15 +51,11 @@ public class WeatherControllerTest {
     @Test
     public void testFetchAndSaveForecast_ValidRequest() throws Exception {
         // 유효한 요청에 대한 테스트
-        WeatherForecastRequestDTO requestDTO = new WeatherForecastRequestDTO();
-        requestDTO.setPageNo(1);
-        requestDTO.setNumOfRows(10);
-        requestDTO.setNx(55);
-        requestDTO.setNy(127);
+        WeatherForecastRequestDTO validRequest = new WeatherForecastRequestDTO(1, 10, 55, 127);
 
         mockMvc.perform(post("/api/forecasts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO)))
+                        .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isOk());
 
         verify(weatherService, times(1)).fetchWeatherData(any(WeatherForecastRequestDTO.class));
@@ -69,15 +64,11 @@ public class WeatherControllerTest {
     @Test
     public void testFetchAndSaveForecast_InvalidRequest() throws Exception {
         // 잘못된 요청에 대한 테스트
-        WeatherForecastRequestDTO requestDTO = new WeatherForecastRequestDTO();
-        requestDTO.setPageNo(null);
-        requestDTO.setNumOfRows(null);
-        requestDTO.setNx(null);
-        requestDTO.setNy(null);
+        WeatherForecastRequestDTO invalidRequest = new WeatherForecastRequestDTO(null, null, null, null);
 
         mockMvc.perform(post("/api/forecasts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO)))
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest())  // HTTP 400 상태 코드 검증
                 .andExpect(jsonPath("$.pageNo").value("페이지 번호를 입력해주세요."))
                 .andExpect(jsonPath("$.numOfRows").value("한 페이지 결과 수를 입력해주세요."))
