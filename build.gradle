@@ -17,6 +17,10 @@ repositories {
 
 dependencies {
     implementation project(':domain')
+    implementation project(':application')
+    implementation project(':application:sync-application')
+    implementation project(':application:inquire-application')
+    implementation project(':common')
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

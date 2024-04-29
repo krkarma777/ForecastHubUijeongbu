@@ -1,3 +1,7 @@
 rootProject.name = 'ForecastHubUijeongbu'
 
-include 'domain'
+include(":domain")
+include(":application")
+include(":application:sync-application")
+include(":application:inquire-application")
+include(":common")
