@@ -1,13 +1,31 @@
 package modules.domain.dto;
 
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class WeatherForecastRequestDTO {
+
+    @NotNull(message = "페이지 번호를 입력해주세요.")
     private int pageNo;                 // 페이지 번호
+    @NotNull(message = "한 페이지 결과 수를 입력해주세요.")
     private int numOfRows;              // 한 페이지 결과 수
-    private String dataType = "JSON";   // 응답 자료 형식 (XML/JSON)
-    private String baseDate;            // 발표일자
-    private String baseTime;            // 발표시각
-    private Double nx;                     // 예보지점 X 좌표
-    private Double ny;                     // 예보지점 Y 좌표
+    @NotNull(message = "예보지점 X 좌표를 입력해주세요.")
+    private int nx;                     // 예보지점 X 좌표
+    @NotNull(message = "예보지점 Y 좌표를 입력해주세요.")
+    private int ny;                     // 예보지점 Y 좌표
+
+    @Override
+    public String toString() {
+        return "WeatherForecastRequestDTO{" +
+                "pageNo=" + pageNo +
+                ", numOfRows=" + numOfRows +
+                ", nx=" + nx +
+                ", ny=" + ny +
+                '}';
+    }
 
     public int getPageNo() {
         return pageNo;
@@ -25,43 +43,19 @@ public class WeatherForecastRequestDTO {
         this.numOfRows = numOfRows;
     }
 
-    public String getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    public String getBaseDate() {
-        return baseDate;
-    }
-
-    public void setBaseDate(String baseDate) {
-        this.baseDate = baseDate;
-    }
-
-    public String getBaseTime() {
-        return baseTime;
-    }
-
-    public void setBaseTime(String baseTime) {
-        this.baseTime = baseTime;
-    }
-
-    public Double getNx() {
+    public int getNx() {
         return nx;
     }
 
-    public void setNx(Double nx) {
+    public void setNx(int nx) {
         this.nx = nx;
     }
 
-    public Double getNy() {
+    public int getNy() {
         return ny;
     }
 
-    public void setNy(Double ny) {
+    public void setNy(int ny) {
         this.ny = ny;
     }
 }
