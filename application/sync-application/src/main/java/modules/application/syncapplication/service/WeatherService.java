@@ -1,7 +1,7 @@
 package modules.application.syncapplication.service;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import modules.domain.dto.WeatherForecastRequestDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,21 +18,20 @@ public class WeatherService {
 
     private final RestTemplate restTemplate;
 
-    @Autowired
     public WeatherService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    public String getWeatherData(String baseDate, String baseTime, int nx, int ny) {
+    public String getWeatherData(WeatherForecastRequestDTO requestDTO) {
         String url = UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .queryParam("serviceKey", apiKey)
-                .queryParam("pageNo", "1")
-                .queryParam("numOfRows", "1000")
-                .queryParam("dataType", "JSON")
-                .queryParam("base_date", baseDate)
-                .queryParam("base_time", baseTime)
-                .queryParam("nx", nx)
-                .queryParam("ny", ny)
+                .queryParam("pageNo", requestDTO.getPageNo())
+                .queryParam("numOfRows", requestDTO.getNumOfRows())
+                .queryParam("dataType", requestDTO.getDataType())
+                .queryParam("base_date", requestDTO.getBaseDate())
+                .queryParam("base_time", requestDTO.getBaseTime())
+                .queryParam("nx", requestDTO.getNx())
+                .queryParam("ny", requestDTO.getNy())
                 .build().encode().toUriString();
 
         return restTemplate.getForObject(url, String.class);
