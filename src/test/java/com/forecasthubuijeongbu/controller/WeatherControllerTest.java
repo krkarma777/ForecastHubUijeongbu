@@ -5,6 +5,7 @@ import com.forecasthubuijeongbu.TestConfiguration;
 import modules.application.inquireapplication.controller.WeatherController;
 import modules.application.syncapplication.service.WeatherService;
 import modules.domain.dto.WeatherForecastRequestDTO;
+import modules.domain.entity.WeatherForecast;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,8 +17,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,6 +51,7 @@ public class WeatherControllerTest {
 
     @Test
     public void testFetchAndSaveForecast_ValidRequest() throws Exception {
+        // 유효한 요청에 대한 테스트
         WeatherForecastRequestDTO requestDTO = new WeatherForecastRequestDTO();
         requestDTO.setPageNo(1);
         requestDTO.setNumOfRows(10);
@@ -63,21 +68,49 @@ public class WeatherControllerTest {
 
     @Test
     public void testFetchAndSaveForecast_InvalidRequest() throws Exception {
-        // 유효하지 않은 데이터로 구성된 DTO 생성
+        // 잘못된 요청에 대한 테스트
         WeatherForecastRequestDTO requestDTO = new WeatherForecastRequestDTO();
-        requestDTO.setPageNo(null);  // 유효하지 않음
-        requestDTO.setNumOfRows(null);  // 유효하지 않음
-        requestDTO.setNx(null);  // 유효하지 않음
-        requestDTO.setNy(null);  // 유효하지 않음
+        requestDTO.setPageNo(null);
+        requestDTO.setNumOfRows(null);
+        requestDTO.setNx(null);
+        requestDTO.setNy(null);
 
-        // MockMvc를 사용하여 POST 요청을 시뮬레이션
         mockMvc.perform(post("/api/forecasts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isBadRequest())  // HTTP 400 상태 코드 검증
-                .andExpect(jsonPath("$.pageNo").value("페이지 번호를 입력해주세요."))  // 오류 메시지 검증
-                .andExpect(jsonPath("$.numOfRows").value("한 페이지 결과 수를 입력해주세요."))  // 오류 메시지 검증
-                .andExpect(jsonPath("$.nx").value("예보지점 X 좌표를 입력해주세요."))  // 오류 메시지 검증
-                .andExpect(jsonPath("$.ny").value("예보지점 Y 좌표를 입력해주세요."));  // 오류 메시지 검증
+                .andExpect(jsonPath("$.pageNo").value("페이지 번호를 입력해주세요."))
+                .andExpect(jsonPath("$.numOfRows").value("한 페이지 결과 수를 입력해주세요."))
+                .andExpect(jsonPath("$.nx").value("예보지점 X 좌표를 입력해주세요."))
+                .andExpect(jsonPath("$.ny").value("예보지점 Y 좌표를 입력해주세요."));
+    }
+
+    @Test
+    public void testGetForecasts_ValidCoordinates() throws Exception {
+        // 유효한 좌표로 예보 요청
+        when(weatherService.getForecasts(55, 127)).thenReturn(Collections.singletonList(new WeatherForecast()));
+
+        mockMvc.perform(get("/api/forecasts?nx=55&ny=127")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetForecasts_NoCoordinates() throws Exception {
+        // 좌표 없이 예보 요청
+        mockMvc.perform(get("/api/forecasts")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("좌표를 정확히 입력해주십시오."));
+    }
+
+    @Test
+    public void testGetForecasts_EmptyResponse() throws Exception {
+        // 결과가 없는 경우
+        when(weatherService.getForecasts(anyInt(), anyInt())).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/forecasts?nx=10&ny=20")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }
