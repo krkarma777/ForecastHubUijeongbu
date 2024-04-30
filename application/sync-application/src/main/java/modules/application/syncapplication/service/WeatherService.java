@@ -36,6 +36,14 @@ public class WeatherService {
         this.objectMapper = objectMapper;
     }
 
+    public WeatherService(RestTemplate restTemplate, WeatherForecastRepository weatherForecastRepository, ObjectMapper objectMapper, String baseUrl, String apiKey) {
+        this.restTemplate = restTemplate;
+        this.weatherForecastRepository = weatherForecastRepository;
+        this.objectMapper = objectMapper;
+        this.baseUrl = baseUrl;
+        this.apiKey = apiKey;
+    }
+
     // 요청된 파라미터와 오늘 포함 지난 3일간의 날씨 데이터를 가져옵니다.
     public List<String> fetchWeatherData(WeatherForecastRequestDTO requestDTO) {
         LocalDate today = LocalDate.now();
