@@ -44,14 +44,31 @@
 
 ### API 사용 예 / 경기도 의정부시 문충로74 지역
 
-#### 날씨 데이터 저장
+- #### 날씨 데이터 저장
 
 ```bash
 curl -X POST "http://localhost:8080/api/forecasts" -H "Content-Type: application/json" -d '{"pageNo": 1, "numOfRows": 10, "nx": 55, "ny": 127}'
 ```
 
-#### 날씨 정보 조회
+포스트맨 사용시
+
+```
+{
+  "pageNo": 1,
+  "numOfRows": 100,
+  "nx": 55,
+  "ny": 127
+}
+```
+
+- #### 날씨 정보 조회
 
 ```bash
 curl -X GET "http://localhost:8080/api/forecasts?nx=55&ny=127"
+```
+
+포스트맨 사용시
+
+```
+http://localhost:8090/api/forecasts?nx=55&ny=127
 ```
