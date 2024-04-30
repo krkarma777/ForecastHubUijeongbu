@@ -8,9 +8,8 @@ import modules.domain.dto.WeatherForecastRequestDTO;
 import modules.domain.entity.WeatherForecast;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest(WeatherController.class)
 @ContextConfiguration(classes = TestConfiguration.class)
 public class WeatherControllerTest {
 
@@ -35,14 +35,11 @@ public class WeatherControllerTest {
     @MockBean
     private WeatherService weatherService;
 
-    @InjectMocks
-    private WeatherController weatherController;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void setup() {
-        weatherController = new WeatherController(mock(WeatherService.class));
+        WeatherController weatherController = new WeatherController(weatherService);
 
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(weatherController).build();
@@ -78,12 +75,12 @@ public class WeatherControllerTest {
 
     @Test
     public void testGetForecasts_ValidCoordinates() throws Exception {
-        // 유효한 좌표로 예보 요청
-        when(weatherService.getForecasts(55, 127)).thenReturn(Collections.singletonList(new WeatherForecast()));
+        List<WeatherForecast> forecasts = Collections.singletonList(new WeatherForecast("2020-01-01", "1200", "Temp", "2020-01-01", "1300", "15", 55, 127));
+        when(weatherService.getForecasts(55, 127)).thenReturn(forecasts);
 
-        mockMvc.perform(get("/api/forecasts?nx=55&ny=127")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/forecasts?nx=55&ny=127"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].fcstValue").value("15"));
     }
 
     @Test
