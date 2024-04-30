@@ -47,13 +47,16 @@ public class WeatherServiceTest {
     private Environment env;
 
     private final String baseUrl = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst";
-    private final String apiKey = "7bcR435Oy54aLzeQQR58s936arOoB80TPOmZ4kpHvju7cKvXw8pV8GU0EMhb4C5NjaAkpB55i6WNM5Ccs6AHsA==";
+    private final String apiKey = "asd";
 
     @BeforeEach
     public void setup() {
         weatherService = new WeatherService(restTemplate, weatherForecastRepository, mock(ObjectMapper.class), baseUrl, apiKey);
     }
 
+    /**
+     * 날씨 데이터를 가져오는 테스트
+     */
     @Test
     public void testFetchWeatherData() {
         WeatherForecastRequestDTO requestDTO = new WeatherForecastRequestDTO();
@@ -73,6 +76,9 @@ public class WeatherServiceTest {
         assertEquals(32, results.size());  // 4일 각각 8시간 슬롯 데이터 확인
     }
 
+    /**
+     * 날씨 데이터를 저장하는 테스트
+     */
     @Test
     public void testSaveForecastData() throws JsonProcessingException {
         String json = "{\"response\": {\"body\": {\"items\": {\"item\": [{\"baseDate\": \"20200401\", \"baseTime\": \"1200\", \"nx\": 55, \"ny\": 127, \"category\": \"TMP\", \"fcstValue\": \"20\"}]}}}}";
@@ -103,6 +109,9 @@ public class WeatherServiceTest {
         service.saveForecastData(json);
     }
 
+    /**
+     * 날씨 데이터를 조회하는 테스트
+     */
     @Test
     public void testGetForecasts() {
         int nx = 55, ny = 127;

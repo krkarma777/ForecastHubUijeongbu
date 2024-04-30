@@ -45,9 +45,11 @@ public class WeatherControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(weatherController).build();
     }
 
+    /**
+     * 유효한 요청으로 날씨 데이터를 가져오고 저장하는 테스트
+     */
     @Test
     public void testFetchAndSaveForecast_ValidRequest() throws Exception {
-        // 유효한 요청에 대한 테스트
         WeatherForecastRequestDTO validRequest = new WeatherForecastRequestDTO(1, 10, 55, 127);
 
         mockMvc.perform(post("/api/forecasts")
@@ -58,21 +60,26 @@ public class WeatherControllerTest {
         verify(weatherService, times(1)).fetchWeatherData(any(WeatherForecastRequestDTO.class));
     }
 
+    /**
+     * 잘못된 요청으로 날씨 데이터를 가져오고 저장하는 테스트
+     */
     @Test
     public void testFetchAndSaveForecast_InvalidRequest() throws Exception {
-        // 잘못된 요청에 대한 테스트
         WeatherForecastRequestDTO invalidRequest = new WeatherForecastRequestDTO(null, null, null, null);
 
         mockMvc.perform(post("/api/forecasts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isBadRequest())  // HTTP 400 상태 코드 검증
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.pageNo").value("페이지 번호를 입력해주세요."))
                 .andExpect(jsonPath("$.numOfRows").value("한 페이지 결과 수를 입력해주세요."))
                 .andExpect(jsonPath("$.nx").value("예보지점 X 좌표를 입력해주세요."))
                 .andExpect(jsonPath("$.ny").value("예보지점 Y 좌표를 입력해주세요."));
     }
 
+    /**
+     * 유효한 좌표로 날씨 데이터를 조회하는 테스트
+     */
     @Test
     public void testGetForecasts_ValidCoordinates() throws Exception {
         List<WeatherForecast> forecasts = Collections.singletonList(new WeatherForecast("2020-01-01", "1200", "Temp", "2020-01-01", "1300", "15", 55, 127));
@@ -83,18 +90,22 @@ public class WeatherControllerTest {
                 .andExpect(jsonPath("$[0].fcstValue").value("15"));
     }
 
+    /**
+     * 좌표를 지정하지 않고 날씨 데이터를 조회하는 테스트
+     */
     @Test
     public void testGetForecasts_NoCoordinates() throws Exception {
-        // 좌표 없이 예보 요청
         mockMvc.perform(get("/api/forecasts")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("좌표를 정확히 입력해주십시오."));
     }
 
+    /**
+     * 조회 결과가 없는 경우의 테스트
+     */
     @Test
     public void testGetForecasts_EmptyResponse() throws Exception {
-        // 결과가 없는 경우
         when(weatherService.getForecasts(anyInt(), anyInt())).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/forecasts?nx=10&ny=20")
